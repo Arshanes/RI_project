@@ -96,8 +96,8 @@ public class TestQuery {
 	}
 
 	public int compare(Object o1, Object o2) {
-	    Float s1 = (Float) copieresults.get((Integer) o1);
-	    Float s2 = (Float) copieresults.get((Integer) o2);
+	    Double s1 = (Double) copieresults.get((Integer) o1);
+	    Double s2 = (Double) copieresults.get((Integer) o2);
 	    return (s2.compareTo(s1));
 	}
 

@@ -3,12 +3,10 @@ package search;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.TreeMap;
 import java.util.Vector;
 
 import index.Term;
-import index.TermFrequency;
 import store.BaseReader;
 import utils.Similarity;
 
@@ -29,8 +27,9 @@ final public class TermQuery {
 	terms = new Vector<TermQ>();
 	System.out.println("La requete est:" + query);
 	String[] termstable = query.split(" ");
-	// System.out.println(termstable.length);
+
 	// on pourrait lemmatiser mais on ne le fait pas!
+
 	for (int i = 0; i < termstable.length; i++) {
 	    String[] termpoid = termstable[i].split(":");
 	    TermQ monTerme = null;
@@ -49,11 +48,11 @@ final public class TermQuery {
      * Calcule les scores des documents contenant au moins un terme de la
      * requete
      */
-    public TreeMap<Integer, Float> score(BaseReader reader) throws IOException {
+    public TreeMap<Integer, Double> score(BaseReader reader) throws IOException {
 
-	TreeMap<Integer, Float> result = new TreeMap<Integer, Float>();
+	TreeMap<Integer, Double> result = new TreeMap<Integer, Double>();
 
-	// pour chaque terme de la requete
+	// Parcours de chaque terme de la requête
 	for (Enumeration<TermQ> e = terms.elements(); e.hasMoreElements();) {
 
 	    TermQ myTermQuery = null;
@@ -61,34 +60,19 @@ final public class TermQuery {
 	    try {
 		myTermQuery = (TermQ) e.nextElement();
 		System.out.println("recherche dans l'index des doc pour " + myTermQuery.text);
-		myTerm = reader.readTerm(myTermQuery.text); // on recupÃ¨re
-							    // toutes les infos
-							    // stockÃ©es sur ce
-							    // terme dans
-							    // l'index
+		myTerm = reader.readTerm(myTermQuery);
 
 		if (myTerm != null) {
 
-		    // on pourrait calculer la frequence inverse du terme !!
+		    // Calcul de IDF:
+		    double idf = Similarity.idf(reader.getNbDocWhereTerme(myTerm.text), reader.maxDoc());
 
-		    // pour chaque document contenant le terme, on calcule un
-		    // score
-		    for (Iterator<?> it = myTerm.frequency.keySet().iterator(); it.hasNext();) {
-			TermFrequency mafrequence = (TermFrequency) myTerm.frequency.get(it.next());
+		    // Calcul de tous les poids d'un terme dans les documents à
+		    // l'aide de tf-idf:
+		    TreeMap<Integer, Double> resultTerme = Similarity.tfidf(myTerm, idf);
 
-			float weights = Similarity.InnerProd(mafrequence.frequency, myTermQuery.weigth);
-			// si ce document a deja un score, on additionne
-			if (!result.containsKey(new Integer(mafrequence.doc_id))) {
-			    result.put(new Integer(mafrequence.doc_id), new Float(weights));
-			}
-			// sinon on insere le document
-			else {
-			    Float ancienscore = (Float) result.get(new Integer(mafrequence.doc_id));
-			    result.remove(new Integer(mafrequence.doc_id));
-			    result.put(new Integer(mafrequence.doc_id), ancienscore + new Float(weights));
-			}
-
-		    }
+		    // Concaténation des résultats avec la liste result:
+		    result = Similarity.concatScores(result, resultTerme);
 		}
 	    } catch (SQLException ex) {
 		System.out.println("Erreur de recuperation du terme ou de calcul du poids");
@@ -98,8 +82,6 @@ final public class TermQuery {
 	    }
 
 	}
-
-	// System.out.println(result.size());
 	return result;
 
     } // scorer

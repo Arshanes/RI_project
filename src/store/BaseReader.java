@@ -10,6 +10,7 @@ import java.util.TreeMap;
 import index.DocumentAIndexer;
 import index.Term;
 import index.TermFrequency;
+import search.TermQ;
 
 /**
  * Cette classe permet de lire la BD relationnelle contenant l'index Tables
@@ -215,11 +216,11 @@ public class BaseReader {
      * table Termes
      * 
      * @see Term
-     * @param termName
+     * @param myTermQuery
      *            nom du terme a chercher
      * @return Term Object Term correspondant a la chaine a rechercher
      */
-    public Term readTerm(String termName) throws SQLException {
+    public Term readTerm(TermQ myTermQuery) throws SQLException {
 
 	// assume conn is an already created JDBC connection
 	Statement stmt = null;
@@ -227,9 +228,9 @@ public class BaseReader {
 	ResultSet rs = null;
 	stmt = conn.createStatement();
 	stmt2 = conn.createStatement();
-	String query = "select * from Termes where term=\'" + termName + "\';";
+	String query = "select * from Termes where term=\'" + myTermQuery.text + "\';";
 	Term myTerm = null;
-	TreeMap tableFrequency = new TreeMap();
+	TreeMap<Integer, TermFrequency> tableFrequency = new TreeMap<Integer, TermFrequency>();
 	rs = stmt.executeQuery(query);
 	while (rs.next()) {
 	    int term_id = rs.getInt("term_id");
@@ -248,7 +249,9 @@ public class BaseReader {
 
 	    }
 
-	    myTerm = new Term(term_id, termName, tableFrequency);
+	    myTerm = new Term(term_id, myTermQuery.text, tableFrequency);
+	    myTerm.doc_count = getNbDocWhereTerme(myTerm.text);
+	    myTerm.weigth = myTermQuery.weigth;
 	} // while rs.next
 
 	if (stmt != null) {
