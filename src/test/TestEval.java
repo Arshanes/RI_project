@@ -81,9 +81,9 @@ public class TestEval {
 
 	    res.close();
 
-	    System.out.println("P@5: " + p5);
-	    System.out.println("P@10: " + p10);
-	    System.out.println("P@25 :" + p25);
+	    System.out.println("P@5: " + (double) p5 / 5);
+	    System.out.println("P@10: " + (double) p10 / 10);
+	    System.out.println("P@25 :" + (double) p25 / 25);
 	} catch (IOException io) {
 	    System.out.println("Erreur lecture fichier");
 	}
