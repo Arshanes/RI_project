@@ -20,12 +20,12 @@ import store.BaseWriter;
 
 public class TestIndexer {
 
-    public static void main(String argv[]) throws IOException, SQLException {
+    public static void test(String corpusDirPath, String configFilePath) throws IOException, SQLException {
 
-	System.out.println("Indexation de la collection");
+	System.out.println("===========[ Indexation de la collection ]===========");
 
 	// connection à la base
-	BufferedReader config = new BufferedReader(new FileReader(argv[1]));
+	BufferedReader config = new BufferedReader(new FileReader(configFilePath));
 	String ConnectURL;
 	String login = "";
 	String pass = "";
@@ -46,13 +46,13 @@ public class TestIndexer {
 	// Parcours des documents avec le parseur Jsoup et construction des
 	// structures de stockage
 	System.out.println("Parcours des documents");
-	IndexWriter monIndexWriter = new IndexWriter(argv[0], maBase);
+	IndexWriter monIndexWriter = new IndexWriter(corpusDirPath, maBase);
 	monIndexWriter.construct();
 
 	// fermeture de la base
 	maBase.close();
 
-	System.out.println("That's all !");
+	System.out.println("===========[ Fin de l'indexation ]===========");
 
     } // main(String[])
 

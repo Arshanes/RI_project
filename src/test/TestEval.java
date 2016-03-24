@@ -12,22 +12,23 @@ import java.util.Vector;
  */
 public class TestEval {
 
-    public static void main(String argv[]) {
-
+    public static void test(String outputFilePath, String qrelFilePath) {
+	System.out.println("===========[ Evaluation du résultat Q" + outputFilePath.charAt(outputFilePath.length() - 1)
+		+ " ]===========");
 	try {
 	    // vecteur contenant les noeuds pertinents
 	    Vector relevants = new Vector();
 
 	    // on lit le fichier de qrel
-	    BufferedReader qrel = new BufferedReader(new FileReader(new String(argv[1])));
+	    BufferedReader qrel = new BufferedReader(new FileReader(qrelFilePath));
 
 	    String ligne = "";
 
 	    // pour chaque ligne
 	    while ((ligne = qrel.readLine()) != null) {
-		System.out.println(ligne);
+		// System.out.println(ligne);
 		String[] maligne = ligne.split("\t");
-		System.out.println(maligne[0] + "-" + maligne[1]);
+		// System.out.println(maligne[0] + "-" + maligne[1]);
 		String doc = maligne[0];
 		// String xpath=maligne[1];
 		String pert = maligne[1];
@@ -43,7 +44,7 @@ public class TestEval {
 	    qrel.close();
 
 	    // on lit le fichier de resultats
-	    BufferedReader res = new BufferedReader(new FileReader(new String(argv[0])));
+	    BufferedReader res = new BufferedReader(new FileReader(outputFilePath));
 
 	    int rang = 1;
 	    int pertinent = 0;
@@ -57,7 +58,7 @@ public class TestEval {
 
 		String[] infodoc = maligne2[0].split("/");
 		String doc = infodoc[infodoc.length - 1];
-		System.out.println("document" + doc);
+		// System.out.println("document" + doc);
 		for (int i = 0; i < relevants.size(); i++) {
 		    RelevantDoc r = (RelevantDoc) relevants.elementAt(i);
 		    // System.out.println("\t"+r.node+"-"+r.doc);
@@ -86,6 +87,9 @@ public class TestEval {
 	    System.out.println("P@25 :" + (double) p25 / 25);
 	} catch (IOException io) {
 	    System.out.println("Erreur lecture fichier");
+	} finally {
+	    System.out.println("===========[ Fin de l'évaluation du résultat Q"
+		    + outputFilePath.charAt(outputFilePath.length() - 1) + " ]===========");
 	}
     }// main
 

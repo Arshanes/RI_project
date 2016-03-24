@@ -127,8 +127,8 @@ public final class IndexWriter {
 
 	for (int i = 0; i < fileList.size(); i++) {
 	    String monNom = (String) fileList.elementAt(i);
-
-	    System.out.println("traitement du fichier" + monNom);
+	    System.out.print(".");
+	    // System.out.println("traitement du fichier" + monNom);
 	    File fichier = new File(monNom);
 
 	    term_count = 0;
@@ -161,11 +161,12 @@ public final class IndexWriter {
 
 	// on insere les termes dans la base
 	try {
-	    PrintPostingTable();
+	    // PrintPostingTable();
 	    BaseWriter.insertPosting(postingTable);
 	} catch (SQLException sqle2) {
 	    System.out.println("Erreur insertion termes " + sqle2.getMessage());
 	}
+	System.out.println();
 
     } // construct()
 

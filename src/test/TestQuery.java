@@ -25,18 +25,16 @@ import store.BaseReader;
  */
 public class TestQuery {
 
-    public static void main(String argv[]) {
+    public static void test(String configfilePath, String _query, String outputFilePath) {
+	System.out.println("===========[ Test de la requête Q" + outputFilePath.charAt(outputFilePath.length() - 1)
+		+ " ]===========");
 	try {
-	    FileWriter out = new FileWriter(new File(argv[2]));
+	    FileWriter out = new FileWriter(new File(outputFilePath));
 
-	    String monfichier = new String(argv[0]);
-	    System.out.println(monfichier);
+	    TermQuery query = new TermQuery(_query);
 
-	    String q = new String(argv[1]);
-	    TermQuery query = new TermQuery(q);
+	    BufferedReader config = new BufferedReader(new FileReader(configfilePath));
 
-	    BufferedReader config = new BufferedReader(new FileReader(monfichier));
-	    System.out.println(monfichier);
 	    String ConnectURL;
 	    String login = "";
 	    String pass = "";
@@ -66,7 +64,7 @@ public class TestQuery {
 	    for (Iterator<?> it = cles.listIterator(); it.hasNext();) {
 		// on recupere l'id du document et on va chercher son nom
 		Integer docid = (Integer) it.next();
-		String nom_fichier = base.document(docid).name;
+		String nom_fichier = base.document(docid).name.replace("\\", "/");
 		out.write(nom_fichier + "\t" + results.get(docid) + "\n");
 		// out.write(node.getTextContent()+"\n\n");
 	    }
@@ -79,6 +77,9 @@ public class TestQuery {
 	    System.out.println("SQL Error ." + e2.getMessage());
 	} catch (Exception e) {
 	    System.out.println("Error : Unable to process files. " + e.getMessage());
+	} finally {
+	    System.out.println("===========[ Fin du test de la requête Q"
+		    + outputFilePath.charAt(outputFilePath.length() - 1) + " ]===========");
 	}
 
     }
